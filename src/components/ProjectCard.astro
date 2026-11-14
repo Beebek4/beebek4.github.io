@@ -1,0 +1,80 @@
+---
+const { project, index } = Astro.props;
+const images = project.images?.length ? project.images : [{ src: project.image, alt: project.imageAlt }];
+const isValidProjectDestination = (value) =>
+  typeof value === 'string' && (/^https?:\/\//i.test(value) || /^\/(?!\/)[^\s]*$/.test(value));
+---
+
+<article class="project-card">
+  <div class="project-image-link" data-project-gallery>
+    {images.map((image, imageIndex) => (
+      <img
+        class="project-image gallery-slide"
+        src={image.src}
+        alt={image.alt}
+        width={image.width ?? 1200}
+        height={image.height ?? 760}
+        loading="lazy"
+        decoding="async"
+        data-gallery-slide
+        hidden={imageIndex !== 0}
+      />
+    ))}
+    {images.length > 1 && (
+      <div class="gallery-controls" data-gallery-controls hidden>
+        <button type="button" class="gallery-button" data-gallery-previous aria-label={`Previous ${project.name} screenshot`}>
+          <span aria-hidden="true">←</span>
+        </button>
+        <span class="gallery-count" data-gallery-count role="status" aria-label={`Screenshot 1 of ${images.length}`}>01 / {String(images.length).padStart(2, '0')}</span>
+        <button type="button" class="gallery-button" data-gallery-next aria-label={`Next ${project.name} screenshot`}>
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    )}
+  </div>
+  <div class="project-copy" id={`project-${index + 1}`}>
+    <div class="project-heading">
+      <div>
+        <p class="project-category">{project.category}</p>
+        <h3>{project.name}</h3>
+      </div>
+      <div class="project-links" aria-label={`${project.name} links`}>
+        {isValidProjectDestination(project.demo) && <a class="project-demo-link" href={project.demo} target="_blank" rel="noreferrer">{project.demoLabel ?? 'Live demo'} <span aria-hidden="true">↗</span></a>}
+        {typeof project.source === 'string' && /^https?:\/\//i.test(project.source) && <a href={project.source} target="_blank" rel="noreferrer">Source code <span aria-hidden="true">↗</span></a>}
+      </div>
+    </div>
+    <p class="project-description">{project.description}</p>
+    {project.reasoning && <p class="project-reasoning"><span>Why this approach</span>{project.reasoning}</p>}
+    <p class="project-contribution"><span>My contribution</span>{project.contribution}</p>
+    <ul class="technology-list" aria-label="Technologies">
+      {project.technologies.map((technology) => <li>{technology}</li>)}
+    </ul>
+  </div>
+</article>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-project-gallery]').forEach((gallery) => {
+    const slides = Array.from(gallery.querySelectorAll<HTMLImageElement>('[data-gallery-slide]'));
+    const controls = gallery.querySelector<HTMLElement>('[data-gallery-controls]');
+    const count = gallery.querySelector<HTMLElement>('[data-gallery-count]');
+    const previous = gallery.querySelector<HTMLButtonElement>('[data-gallery-previous]');
+    const next = gallery.querySelector<HTMLButtonElement>('[data-gallery-next]');
+
+    if (slides.length < 2 || !controls || !count || !previous || !next) return;
+
+    let current = 0;
+    const showSlide = (index: number) => {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, slideIndex) => {
+        slide.hidden = slideIndex !== current;
+      });
+      const label = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      count.textContent = label;
+      count.setAttribute('aria-label', `Screenshot ${current + 1} of ${slides.length}`);
+    };
+
+    previous.addEventListener('click', () => showSlide(current - 1));
+    next.addEventListener('click', () => showSlide(current + 1));
+    controls.hidden = false;
+  });
+</script>

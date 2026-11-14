@@ -1,0 +1,162 @@
+---
+import ProjectCard from '../components/ProjectCard.astro';
+import { experience, profile, projects } from '../data/portfolio.js';
+import '../styles/global.css';
+
+const hasUrl = (value) => typeof value === 'string' && /^https?:\/\//i.test(value);
+const hasCvLink = (value) => hasUrl(value) || (typeof value === 'string' && /^\/(?!\/)[^\s]*$/.test(value));
+const emailHref = profile.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email) ? `mailto:${profile.email}` : '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f5f1" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2" sizes="any" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2" />
+    <meta name="description" content={`${profile.name} — ${profile.role}. Selected work, experience, and contact details.`} />
+    <title>{profile.name} — {profile.role}</title>
+    <script is:inline>
+      try {
+        if (localStorage.getItem('portfolio-theme') === 'dark') {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label={`${profile.name}, home`}>{profile.initials}</a>
+      <nav aria-label="Main navigation">
+        <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" hidden>
+          <span class="theme-icon" data-theme-icon aria-hidden="true">☾</span>
+          <span class="theme-label" data-theme-label>Dark mode</span>
+        </button>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="intro section-shell" id="top" aria-labelledby="intro-title">
+        <div class="intro-copy">
+          <p class="eyebrow"><span class="availability-dot" aria-hidden="true"></span> Curious, persistent problem-solver.</p>
+          <h1 id="intro-title">{profile.name}<span class="headline-period">.</span></h1>
+          <p class="intro-role">{profile.role}</p>
+          <p class="intro-description">{profile.intro}</p>
+          <div class="intro-portrait-wrap">
+            <div class="intro-portrait">
+              <img src={profile.portrait} alt={profile.portraitAlt} width="2468" height="3294" fetchpriority="high" />
+            </div>
+            <p class="portrait-caption">I’m the one in the middle!</p>
+          </div>
+          <div class="intro-skills">
+            <p class="eyebrow">Tools I reach for</p>
+            <ul class="skills-list">{profile.skills.map((skill) => <li>{skill}</li>)}</ul>
+          </div>
+          <a class="primary-link" href="#projects">View my work <span aria-hidden="true">↓</span></a>
+        </div>
+      </section>
+
+      <section class="projects-section section-shell" id="projects" aria-labelledby="projects-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">A few things I’ve made</p>
+            <h2 id="projects-title">Selected work<span class="headline-period">.</span></h2>
+          </div>
+          <p class="section-note">A selection of projects<br />and the thinking behind them.</p>
+        </div>
+        <div class="projects-grid">
+          {projects.map((project, index) => <ProjectCard project={project} index={index} />)}
+        </div>
+      </section>
+
+      <section class="experience-section section-shell" id="experience" aria-labelledby="experience-title">
+        <div class="section-heading compact-heading">
+          <div>
+            <p class="eyebrow">Where I’ve been</p>
+            <h2 id="experience-title">Experience<span class="headline-period">.</span></h2>
+          </div>
+          <span class="section-number">02</span>
+        </div>
+        <div class="experience-list">
+          {experience.map((role) => (
+            <article class="experience-item">
+              <div class="experience-meta"><span>{role.dates}</span><span>{role.company}</span></div>
+              <div class="experience-details">
+                <h3>{role.title}</h3>
+                <ul>{role.details.map((detail) => <li>{detail}</li>)}</ul>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="about-section section-shell" id="about" aria-labelledby="about-title">
+        <div class="section-heading compact-heading">
+          <div>
+            <p class="eyebrow">A little about me</p>
+            <h2 id="about-title">Beyond the code<span class="headline-period">.</span></h2>
+          </div>
+          <span class="section-number">03</span>
+        </div>
+        <div class="about-content">
+          <p class="about-copy">{profile.about}</p>
+        </div>
+      </section>
+
+      <section class="contact-section section-shell" id="contact" aria-labelledby="contact-title">
+        <div class="contact-topline"><p class="eyebrow">Have a good one in mind?</p><span class="section-number">04</span></div>
+        <h2 id="contact-title">Let’s make<br />something useful<span class="headline-period">.</span></h2>
+        <div class="contact-bottom">
+          <div>
+            {emailHref && <a class="contact-email" href={emailHref}>{profile.email}<span aria-hidden="true">↗</span></a>}
+            <p class="contact-prompt">I’m always happy to talk about interesting work.</p>
+          </div>
+          <div class="social-links" aria-label="Social and CV links">
+            {hasUrl(profile.github) && <a href={profile.github} target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>}
+            {hasUrl(profile.linkedin) && <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>}
+            {hasCvLink(profile.cv) && <a href={profile.cv} target="_blank" rel="noreferrer">CV <span aria-hidden="true">↗</span></a>}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer section-shell">
+      <span>© {new Date().getFullYear()} {profile.name}</span>
+      <a href="#top">Back to top ↑</a>
+    </footer>
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const button = document.getElementById('theme-toggle');
+        const icon = button?.querySelector('[data-theme-icon]');
+        const label = button?.querySelector('[data-theme-label]');
+        if (!button || !icon || !label) return;
+
+        const applyTheme = (theme) => {
+          const isDark = theme === 'dark';
+          root.dataset.theme = isDark ? 'dark' : 'light';
+          button.setAttribute('aria-pressed', String(isDark));
+          button.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+          icon.textContent = isDark ? '☀' : '☾';
+          label.textContent = isDark ? 'Light mode' : 'Dark mode';
+          try {
+            localStorage.setItem('portfolio-theme', isDark ? 'dark' : 'light');
+          } catch {}
+        };
+
+        applyTheme(root.dataset.theme || 'light');
+        button.addEventListener('click', () => {
+          applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+        });
+        button.hidden = false;
+      })();
+    </script>
+  </body>
+</html>
