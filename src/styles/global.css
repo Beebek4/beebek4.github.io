@@ -51,7 +51,9 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; border-
 .theme-toggle { display: inline-flex; flex: 0 0 112px; align-items: center; justify-content: center; gap: 8px; width: 112px; min-width: 112px; min-height: 34px; padding: 0 11px; border: 1px solid var(--line); border-radius: 2px; background: transparent; color: var(--ink); cursor: pointer; font: 10px var(--mono); white-space: nowrap; transition: border-color .25s ease, background .25s ease, color .25s ease; }
 .theme-toggle:hover { border-color: var(--accent); background: var(--accent-light); }
 .theme-toggle[hidden] { display: none; }
-.theme-icon { display: inline-block; width: 16px; text-align: center; font: 16px/1 var(--sans); }
+.theme-icon { display: inline-grid; flex: 0 0 16px; width: 16px; height: 16px; place-items: center; }
+.theme-icon-state { display: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.theme-toggle[aria-pressed="false"] .icon-moon, .theme-toggle[aria-pressed="true"] .icon-sun { display: block; }
 .intro { position: relative; min-height: 565px; padding-block: 88px 92px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 28%); align-items: center; gap: clamp(36px, 7vw, 96px); }
 .intro-copy { max-width: 790px; }
 .intro-portrait-wrap { position: absolute; top: 50%; right: 0; width: 28%; transform: translateY(-50%); }
